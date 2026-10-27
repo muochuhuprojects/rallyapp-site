@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rally · Dating for active people</title>
+<meta name="description" content="Rally is dating for active people. Join your city's club, train together at real sessions, then match with the people you met.">
+<meta name="theme-color" content="#120F0D">
+<meta property="og:title" content="Rally · Dating for active people">
+<meta property="og:description" content="Join your city's club, train together at real sessions, then match with the people you met.">
+<meta property="og:url" content="https://rallyapp.ca/">
+<link rel="canonical" href="https://rallyapp.ca/">
+<link rel="icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #120F0D; --surface: #1C1815; --soft: #272019; --ink: #F7F2EC; --muted: #A3978B;
+    --line: #30281F; --accent: #FF8A3D; --on-accent: #2A1203; --glow: rgba(255,138,61,0.22);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; overflow-x: clip; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.55 Figtree, -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; overflow-x: clip; }
+  a { color: var(--accent); }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+  h1, h2, h3 { font-family: "Bricolage Grotesque", sans-serif; letter-spacing: -0.03em; margin: 0; }
+
+  header { position: sticky; top: 0; z-index: 10; background: rgba(18,15,13,0.8); backdrop-filter: blur(14px); border-bottom: 1px solid transparent; transition: border-color .2s; }
+  header.scrolled { border-bottom-color: rgba(255,255,255,.05); }
+  .bar { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+  .logo { display: flex; align-items: center; gap: 9px; color: var(--ink); text-decoration: none; font: 800 26px "Bricolage Grotesque", sans-serif; letter-spacing: -0.04em; }
+  .ball { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); position: relative; overflow: hidden; }
+  .ball::before, .ball::after { content: ""; position: absolute; width: 26px; height: 26px; border-radius: 50%; border: 2px solid rgba(255,255,255,.85); top: -2px; }
+  .ball::before { left: -17px; } .ball::after { right: -17px; }
+  .pill { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 13px 22px; font-weight: 600; text-decoration: none; transition: transform .15s ease, background .2s; }
+  .pill:active { transform: scale(.96); }
+  .pill.primary { background: var(--accent); color: var(--on-accent); }
+  .pill.ghost { background: var(--soft); color: var(--ink); }
+  .pill.small { padding: 9px 16px; font-size: 15px; }
+
+  .hero { position: relative; padding: 72px 0 96px; }
+  .hero { isolation: isolate; }
+  .hero::before { content: ""; position: absolute; z-index: -1; inset: -260px -40vw -220px; background: radial-gradient(ellipse 42% 48% at 32% 42%, var(--glow), rgba(255,138,61,0.06) 55%, transparent 78%); pointer-events: none; }
+  .hero .wrap { position: relative; }
+  .eyebrow { color: var(--accent); font-weight: 600; font-size: 13px; letter-spacing: .16em; text-transform: uppercase; }
+  .hero h1 { font-size: clamp(48px, 9vw, 104px); line-height: 1; margin: 18px 0 34px; }
+  /* The wheel: one row per word, each row exactly --row tall, so every stop lands cleanly.
+     The window is taller than the letters (room for descenders) and fades at top and bottom. */
+  .cycle { --row: 1.3em; display: block; height: var(--row); overflow: hidden; color: var(--accent); margin-top: -0.08em;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 16%, #000 84%, transparent 100%);
+            mask-image: linear-gradient(to bottom, transparent 0, #000 16%, #000 84%, transparent 100%); }
+  .cycle span { display: block; line-height: var(--row); animation: cycle 14s cubic-bezier(.65,0,.25,1) infinite; }
+  @keyframes cycle {
+    0%,12% { transform: translateY(0); }
+    15%,26% { transform: translateY(calc(var(--row) * -1)); }
+    29%,40% { transform: translateY(calc(var(--row) * -2)); }
+    43%,54% { transform: translateY(calc(var(--row) * -3)); }
+    57%,68% { transform: translateY(calc(var(--row) * -4)); }
+    71%,96% { transform: translateY(calc(var(--row) * -5)); }
+    100% { transform: translateY(0); }
+  }
+  .lead { color: var(--muted); font-size: clamp(18px, 2.2vw, 21px); max-width: 620px; margin: 0 0 32px; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .soon { color: var(--muted); font-size: 14px; margin-top: 14px; }
+
+  section { position: relative; padding: 88px 0; }
+  section::before { content: ""; position: absolute; top: 0; left: 50%; width: min(1080px, 90%); height: 1px; transform: translateX(-50%);
+    background: linear-gradient(90deg, transparent, var(--line) 20%, var(--line) 80%, transparent); }
+  section h2 { font-size: clamp(34px, 5vw, 52px); line-height: 1.04; margin: 10px 0 36px; max-width: 760px; }
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; counter-reset: s; }
+  .card { background: linear-gradient(180deg, var(--surface), rgba(28,24,21,.6)); box-shadow: inset 0 0 0 1px rgba(255,255,255,.04); border-radius: 24px; padding: 26px; }
+  .card h3 { font-size: 24px; margin: 14px 0 8px; }
+  .card p { color: var(--muted); margin: 0; }
+  .num { counter-increment: s; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,138,61,.12); box-shadow: inset 0 0 0 1.5px rgba(255,138,61,.55); color: var(--accent); display: grid; place-items: center; font: 800 18px "Bricolage Grotesque"; }
+  .num::before { content: counter(s); }
+  .sports { display: flex; flex-wrap: wrap; gap: 10px; }
+  .sports span { background: var(--surface); border: 1px solid rgba(255,255,255,.06); border-radius: 999px; padding: 9px 16px; font-weight: 600; font-size: 15px; transition: border-color .2s, color .2s, transform .2s; }
+  .sports span:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+  .safe { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .safe .card { display: flex; gap: 14px; align-items: flex-start; }
+  .tick { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; font-weight: 800; font-size: 14px; margin-top: 2px; }
+  .safe p { color: var(--ink); }
+  .cta { text-align: center; }
+  .cta h2 { margin: 10px auto 18px; }
+  .cta p { color: var(--muted); margin: 0 auto 28px; max-width: 520px; }
+
+  footer { position: relative; padding: 36px 0 48px; color: var(--muted); font-size: 15px; }
+  footer .row { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; justify-content: space-between; }
+  footer nav { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--ink); }
+
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s cubic-bezier(.2,.8,.2,1), transform .6s cubic-bezier(.2,.8,.2,1); }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (max-width: 760px) {
+    .steps, .safe { grid-template-columns: 1fr; }
+    .hero { padding: 48px 0 72px; }
+    section { padding: 60px 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cycle span { animation: none; transform: translateY(calc(var(--row) * -5)); }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+<header id="top"><div class="wrap bar">
+  <a class="logo" href="./" aria-label="Rally home"><span class="ball" aria-hidden="true"></span>Rally</a>
+  <a class="pill primary small" href="#get">Get Rally</a>
+</div></header>
+
+<main>
+<div class="hero"><div class="wrap">
+  <div class="eyebrow">Dating for active people</div>
+  <h1 aria-label="Dating for active people.">Dating for
+    <span class="cycle" aria-hidden="true"><span>runners.<br>climbers.<br>lifters.<br>cyclists.<br>yogis.<br>active people.</span></span>
+  </h1>
+  <p class="lead">Swiping’s fine. Sweating together is better. Join your city’s club, show up to a run or a climb night, then see who you trained with and match.</p>
+  <div class="ctas">
+    <a class="pill primary" href="#get">Get Rally</a>
+    <a class="pill ghost" href="#how">How it works</a>
+  </div>
+</div></div>
+
+<section id="how"><div class="wrap">
+  <div class="eyebrow reveal">How it works</div>
+  <h2 class="reveal">Meet at real sessions, not in an endless feed.</h2>
+  <div class="steps">
+    <div class="card reveal"><div class="num" aria-hidden="true"></div><h3>Join your club</h3><p>Sign up for sessions run by your city’s club: long runs, climb nights, tennis socials, rides, swims, yoga, and hikes.</p></div>
+    <div class="card reveal"><div class="num" aria-hidden="true"></div><h3>Train together</h3><p>Show up and check in with the organizer’s code. Afterwards, see the people who were actually there.</p></div>
+    <div class="card reveal"><div class="num" aria-hidden="true"></div><h3>Then match</h3><p>Like a photo or a whole profile. If it’s mutual, a chat opens, with date ideas built from what you share.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="eyebrow reveal">For every pace</div>
+  <h2 class="reveal">26 ways to move. Find people who move like you.</h2>
+  <div class="sports reveal">
+    <span>Running</span><span>Climbing</span><span>Weightlifting</span><span>Cycling</span><span>Yoga</span><span>Swimming</span><span>Hiking</span><span>HIIT</span><span>Pilates</span><span>Tennis</span><span>Pickleball</span><span>Padel</span><span>Boxing</span><span>Soccer</span><span>Basketball</span><span>Dance</span><span>Surfing</span><span>and more</span>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="eyebrow reveal">Safe by design</div>
+  <h2 class="reveal">Real people, kept that way.</h2>
+  <div class="safe">
+    <div class="card reveal"><span class="tick" aria-hidden="true">✓</span><p>18+ only, with an age check at sign-up.</p></div>
+    <div class="card reveal"><span class="tick" aria-hidden="true">✓</span><p>Every photo is reviewed before anyone sees it.</p></div>
+    <div class="card reveal"><span class="tick" aria-hidden="true">✓</span><p>Report or block anyone, anytime. We review reports within 24 hours.</p></div>
+    <div class="card reveal"><span class="tick" aria-hidden="true">✓</span><p>No exact locations, no ads, no tracking. Delete your account in the app at any time.</p></div>
+  </div>
+</div></section>
+
+<section id="get" class="cta"><div class="wrap">
+  <div class="eyebrow reveal">Coming soon</div>
+  <h2 class="reveal">Rally is coming to the App Store.</h2>
+  <p class="reveal">We’re launching on iPhone with Downtown Active Club. Questions? Email <a href="mailto:support@rallyapp.ca">support@rallyapp.ca</a>.</p>
+  <a class="pill primary reveal" href="mailto:support@rallyapp.ca?subject=Tell%20me%20when%20Rally%20launches">Tell me when it launches</a>
+</div></section>
+</main>
+
+<footer><div class="wrap row">
+  <span>© 2026 Rally · Rally is for adults 18 and over.</span>
+  <nav>
+    <a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="community-guidelines.html">Guidelines</a><a href="support.html">Support</a><a href="delete-account.html">Delete account</a>
+  </nav>
+</div></footer>
+
+<script>
+  const header = document.getElementById('top');
+  const onScroll = () => header.classList.toggle('scrolled', scrollY > 8);
+  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+  const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach((el, i) => { el.style.transitionDelay = `${(i % 4) * 60}ms`; io.observe(el); });
+</script>
+</body>
+</html>
