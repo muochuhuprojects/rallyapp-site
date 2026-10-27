@@ -86,6 +86,18 @@
   .cta h2 { margin: 10px auto 18px; }
   .cta p { color: var(--muted); margin: 0 auto 28px; max-width: 520px; }
 
+  .waitlist { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 620px; margin: 0 auto; }
+  .waitlist input { flex: 1 1 200px; min-height: 52px; border-radius: 999px; border: 1px solid rgba(255,255,255,.08); background: var(--surface); color: var(--ink); font: 500 17px Figtree, sans-serif; padding: 0 20px; outline: none; transition: border-color .2s, box-shadow .2s; }
+  .waitlist input::placeholder { color: var(--muted); }
+  .waitlist input:focus { border-color: rgba(255,138,61,.6); box-shadow: 0 0 0 4px rgba(255,138,61,.12); }
+  .waitlist button { border: 0; cursor: pointer; font: 600 17px Figtree, sans-serif; min-height: 52px; }
+  .waitlist button[disabled] { opacity: .6; cursor: default; }
+  .waitlist.done { display: none; }
+  .wl-msg { min-height: 26px; margin: 16px auto 0 !important; font-weight: 600; }
+  .wl-msg.ok { color: var(--accent); font-size: 20px; font-family: "Bricolage Grotesque", sans-serif; }
+  .wl-msg.err { color: #FF8A8A; }
+  .fine { font-size: 14px; margin-top: 18px !important; }
+  .hp, .sr { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
   footer { position: relative; padding: 36px 0 48px; color: var(--muted); font-size: 15px; }
   footer .row { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; justify-content: space-between; }
   footer nav { display: flex; flex-wrap: wrap; gap: 8px 20px; }
@@ -109,7 +121,7 @@
 <body>
 <header id="top"><div class="wrap bar">
   <a class="logo" href="./" aria-label="Rally home"><span class="ball" aria-hidden="true"></span>Rally</a>
-  <a class="pill primary small" href="#get">Get Rally</a>
+  <a class="pill primary small" href="#get">Join the waitlist</a>
 </div></header>
 
 <main>
@@ -120,7 +132,7 @@
   </h1>
   <p class="lead">Swiping’s fine. Sweating together is better. Join your city’s club, show up to a run or a climb night, then see who you trained with and match.</p>
   <div class="ctas">
-    <a class="pill primary" href="#get">Get Rally</a>
+    <a class="pill primary" href="#get">Join the waitlist</a>
     <a class="pill ghost" href="#how">How it works</a>
   </div>
 </div></div>
@@ -155,10 +167,19 @@
 </div></section>
 
 <section id="get" class="cta"><div class="wrap">
-  <div class="eyebrow reveal">Coming soon</div>
-  <h2 class="reveal">Rally is coming to the App Store.</h2>
-  <p class="reveal">We’re launching on iPhone with Downtown Active Club. Questions? Email <a href="mailto:support@rallyapp.ca">support@rallyapp.ca</a>.</p>
-  <a class="pill primary reveal" href="mailto:support@rallyapp.ca?subject=Tell%20me%20when%20Rally%20launches">Tell me when it launches</a>
+  <div class="eyebrow reveal">Join the waitlist</div>
+  <h2 class="reveal">Be first in when Rally opens near you.</h2>
+  <p class="reveal">Rally is coming to iPhone, starting with Downtown Active Club. Leave your email and we’ll tell you the moment it’s live.</p>
+  <form id="waitlist" class="waitlist reveal" novalidate>
+    <label class="sr" for="wl-email">Email</label>
+    <input id="wl-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@email.com" required maxlength="254">
+    <label class="sr" for="wl-city">City (optional)</label>
+    <input id="wl-city" name="city" type="text" autocomplete="address-level2" placeholder="City (optional)" maxlength="80">
+    <input class="hp" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <button class="pill primary" type="submit">Join the waitlist</button>
+  </form>
+  <p id="wl-msg" class="wl-msg" role="status" aria-live="polite"></p>
+  <p class="fine">We’ll only email you about Rally’s launch. <a href="privacy.html">Privacy</a> · Questions? <a href="mailto:support@rallyapp.ca">support@rallyapp.ca</a></p>
 </div></section>
 </main>
 
@@ -175,6 +196,31 @@
   addEventListener('scroll', onScroll, { passive: true }); onScroll();
   const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.15 });
   document.querySelectorAll('.reveal').forEach((el, i) => { el.style.transitionDelay = `${(i % 4) * 60}ms`; io.observe(el); });
+
+  // Waitlist: adds the email through a database function that can only insert, never read.
+  const API = 'https://geaiwlruhvypwcbqizup.supabase.co/rest/v1/rpc/join_waitlist';
+  const KEY = 'sb_publishable_CtZGW0oPwsWYVcPcmoR5sg_DeDV78t9'; // public by design; the function only accepts signups
+  const form = document.getElementById('waitlist');
+  const msg = document.getElementById('wl-msg');
+  const say = (text, kind) => { msg.textContent = text; msg.className = 'wl-msg ' + (kind || ''); };
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (form.company.value) return; // bots fill the hidden field
+    const email = form.email.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { say('Enter a valid email address.', 'err'); form.email.focus(); return; }
+    const button = form.querySelector('button');
+    button.disabled = true; button.textContent = 'Joining…'; say('');
+    try {
+      const res = await fetch(API, { method: 'POST', headers: { apikey: KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, city: form.city.value.trim() || null }) });
+      if (!res.ok) { const body = await res.json().catch(() => ({})); throw new Error(body.message || 'Something went wrong. Try again.'); }
+      form.classList.add('done');
+      say('You’re on the list. We’ll email you when Rally opens near you.', 'ok');
+    } catch (err) {
+      say(err.message && err.message.length < 120 ? err.message : 'Couldn’t join right now. Try again in a moment.', 'err');
+      button.disabled = false; button.textContent = 'Join the waitlist';
+    }
+  });
 </script>
 </body>
 </html>
